@@ -20,3 +20,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
+External libraries used by Kroniax2-Mapeditor
+-------------------------------
+
+* SFML is under the MIT license
+* TGUI is under the zlib/libpng license
+
