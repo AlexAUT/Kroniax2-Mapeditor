@@ -20,6 +20,8 @@
 #include "editor/gui.hpp"
 #include "editor/tilesetManager.hpp"
 #include "editor/tilesetController.hpp"
+#include "editor/layerController.hpp"
+#include "editor/layerManager.hpp"
 
 class Application
 {
@@ -42,6 +44,8 @@ private:
   Gui mGui;
   TilesetManager mTilesetManager;
   TilesetController mTilesetController;
+  LayerManager mLayerManager;
+  LayerController mLayerController;
 };
 
 #endif

@@ -54,7 +54,6 @@ const sfg::Desktop& Gui::getDesktop() const
 void Gui::initGui()
 {
   initMenuBar();
-  initLayerWindow();
   initSelectionWindow();
 }
 
@@ -120,41 +119,6 @@ void Gui::initMenuBar()
   window->Add(box);
   mDesktop.Add(window);
 }
-
-void Gui::initLayerWindow()
-{
-  auto box = sfg::Box::Create(sfg::Box::Orientation::VERTICAL, 4.f);
-  auto comboBox = sfg::ComboBox::Create();
-  comboBox->AppendItem("No layer created!");
-  comboBox->AppendItem("No layer created!");
-  comboBox->AppendItem("No layer created!");
-  comboBox->AppendItem("No layer created!");
-  comboBox->AppendItem("No layer created!");
-  comboBox->SelectItem(0);
-  box->Pack(comboBox, false);
-
-  auto subBox = sfg::Box::Create();
-  box->Pack(subBox, false);
-
-  auto bt = sfg::Button::Create("Add");
-  //bt->GetSignal(sfg::Button::OnLeftClick).Connect(std::bind(&Gui::openLoadTilesetDialog, this));
-  subBox->Pack(bt, false);
-  bt = sfg::Button::Create("Remove");
-  subBox->Pack(bt, false);
-  bt = sfg::Button::Create("Up");
-  subBox->Pack(bt, false);
-  bt = sfg::Button::Create("Down");
-  subBox->Pack(bt, false);
-
-  auto window = sfg::Window::Create(sfg::Window::Style::BACKGROUND | sfg::Window::Style::SHADOW |
-    sfg::Window::Style::TITLEBAR);
-
-  window->Add(box);
-  window->SetTitle("Layers");
-  mDesktop.Add(window);
-
-}
-
 
 void Gui::initSelectionWindow()
 {
