@@ -61,7 +61,7 @@ void TilesetController::redrawCanvas()
   if (mGui.tilesetPages.size() != 0)
   {
     std::cout << "Redraw, canvas: " << mGui.activePage->texName << std::endl;
-    const sf::Texture &tex = mTilesetManager.getTileset(mGui.activePage->canvas->GetId());
+    auto &tex = mTilesetManager.getTileset(mGui.activePage->canvas->GetId());
     if (mRenderTex.getSize() != sf::Vector2u(static_cast<unsigned>(mGui.activePage->canvas->GetAllocation().width), 
       static_cast<unsigned>(mGui.activePage->canvas->GetAllocation().height)))
     {
