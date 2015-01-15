@@ -26,3 +26,23 @@ const Layer& LayerManager::getLayer(const std::string &name) const
   assert(found != mLayers.end());
   return found->second;
 }
+
+void LayerManager::setActiveLayer(const std::string &name)
+{
+  mActiveLayer = name;
+}
+
+std::string LayerManager::getActiveLayerName()
+{
+  return mActiveLayer;
+}
+
+Layer& LayerManager::getActiveLayer()
+{
+  return getLayer(mActiveLayer);
+}
+
+const Layer& LayerManager::getActiveLayer() const
+{
+  return getLayer(mActiveLayer);
+}

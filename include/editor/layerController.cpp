@@ -26,8 +26,8 @@ LayerController::LayerController(LayerManager &layerManager, sfg::Desktop &deskt
 
 void LayerController::changeActiveLayer(const std::string &name)
 {
-   mActiveLayer = name;
-   std::cout << "active layer: " << mActiveLayer << std::endl;
+   mLayerManager.setActiveLayer(name);
+   std::cout << "active layer: " << mLayerManager.getActiveLayerName() << std::endl;
 }
 
 void LayerController::initGui()

@@ -34,8 +34,6 @@ private:
   LayerManager &mLayerManager;
   sfg::Desktop &mDesktop;
 
-  std::string mActiveLayer;
-
   struct
   {
     std::shared_ptr<sfg::Table> layerTable;

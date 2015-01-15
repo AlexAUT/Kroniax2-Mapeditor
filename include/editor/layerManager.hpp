@@ -17,12 +17,18 @@ public:
   Layer& getLayer(const std::string &name);
   const Layer& getLayer(const std::string &name) const;
 
+  void setActiveLayer(const std::string &name);
+  std::string getActiveLayerName();
+  Layer& getActiveLayer();
+  const Layer& getActiveLayer() const;
 
 
 private:
 
 private:
   std::map<std::string, Layer> mLayers;
+
+  std::string mActiveLayer;
 };
 
 #endif
