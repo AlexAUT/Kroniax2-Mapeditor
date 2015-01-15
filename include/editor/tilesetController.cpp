@@ -126,7 +126,7 @@ void TilesetController::loadNewTileset()
   }
   else
   {
-
+    mGui.loadTilesetName->SetText("Could not load the file");
   }
 }
 
