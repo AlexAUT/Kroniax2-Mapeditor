@@ -177,13 +177,13 @@ void TilesetController::addTilesetToView(const std::string &name)
   canvas->SetRequisition({ 200, 200 });
   subBox->Pack(canvas);
   auto vScrollbar = sfg::Scrollbar::Create(sfg::Scrollbar::Orientation::VERTICAL);
-  vScrollbar->SetRequisition({ 25, 0 });
+  vScrollbar->SetRequisition({ 18, 0 });
   vScrollbar->SetRange(0, 100);
   vScrollbar->SetIncrements(1, 5);
   vScrollbar->GetAdjustment()->GetSignal(sfg::Adjustment::OnChange).Connect(std::bind(&TilesetController::updateOffset, this));
   subBox->Pack(vScrollbar, false);
   auto hScrollbar = sfg::Scrollbar::Create();
-  hScrollbar->SetRequisition({ 0, 25 });
+  hScrollbar->SetRequisition({ 0, 18 });
   hScrollbar->SetIncrements(1, 5);
   hScrollbar->SetRange(0, 100);
   hScrollbar->GetAdjustment()->GetSignal(sfg::Adjustment::OnChange).Connect(std::bind(&TilesetController::updateOffset, this));
