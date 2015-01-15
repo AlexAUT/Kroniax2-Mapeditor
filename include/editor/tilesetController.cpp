@@ -93,8 +93,8 @@ void TilesetController::redrawCanvas()
     }
     else
     {
-      mGui.activePage->hScrollbar->Show(false);
       mGui.activePage->hScrollbar->SetValue(0);
+      mGui.activePage->hScrollbar->GetAdjustment()->Configure(0, 0, 0, 0, 0, 1);
     }
     auto difference_y = sprite.getGlobalBounds().height - mRenderTex.getSize().y;
     if (difference_y > 0)
@@ -105,8 +105,8 @@ void TilesetController::redrawCanvas()
     }
     else
     {
-      mGui.activePage->vScrollbar->Show(false);
       mGui.activePage->vScrollbar->SetValue(0);
+      mGui.activePage->vScrollbar->GetAdjustment()->Configure(0, 0, 0, 0, 0, 1);
     }
   }
 }
