@@ -212,7 +212,7 @@ void TilesetController::initTilesetWindow()
   //TILESET view
   mGui.notebook = sfg::Notebook::Create();
   mGui.notebook->GetSignal(sfg::Notebook::OnLeftClick).Connect(std::bind(&TilesetController::updateActiveCanvas, this));
-  mGui.notebook->GetSignal(sfg::Notebook::OnSizeAllocate).Connect(std::bind(&TilesetController::redrawCanvas, this));
+ // mGui.notebook->GetSignal(sfg::Notebook::OnSizeAllocate).Connect(std::bind(&TilesetController::redrawCanvas, this));
   
   auto label = sfg::Label::Create("No tileset loaded");
   auto canvas = sfg::Canvas::Create();
