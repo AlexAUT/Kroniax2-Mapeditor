@@ -49,7 +49,8 @@ void TilesetController::redrawCanvas()
   {
     std::cout << "Redraw, canvas: " << mGui.activePage->texName << std::endl;
     const sf::Texture &tex = mTilesetManager.getTileset(mGui.activePage->canvas->GetId());
-    if (mRenderTex.getSize() != sf::Vector2u(mGui.activePage->canvas->GetAllocation().width, mGui.activePage->canvas->GetAllocation().height))
+    if (mRenderTex.getSize() != sf::Vector2u(static_cast<unsigned>(mGui.activePage->canvas->GetAllocation().width), 
+      static_cast<unsigned>(mGui.activePage->canvas->GetAllocation().height)))
     {
       std::cout << "Recreated texture" << std::endl;
       mRenderTex.create(static_cast<unsigned>(mGui.activePage->canvas->GetAllocation().width),
