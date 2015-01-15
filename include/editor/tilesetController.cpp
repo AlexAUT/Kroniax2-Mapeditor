@@ -82,7 +82,6 @@ void TilesetController::redrawCanvas()
     std::cout << "Draw" << std::endl;
     mGui.activePage->canvas->Clear();
     mGui.activePage->canvas->Draw(sprite2);
-    mGui.activePage->canvas->Display();
     std::cout << "Offset: " << mCurrentOffset.x << " | " << mCurrentOffset.y << std::endl;
     auto difference_x = sprite.getGlobalBounds().width - mRenderTex.getSize().x;
     if (difference_x > 0)
