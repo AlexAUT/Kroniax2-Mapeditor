@@ -37,9 +37,17 @@ void TilesetController::update()
   {
     auto cursorPos = mGui.zoomEntry->GetCursorPosition();
     mGui.zoomEntry->SetText(std::to_string(static_cast<int>(mCurrentZoom * 100)) + "%");
-    mGui.zoomEntry->SetCursorPosition(cursorPos;)
+    mGui.zoomEntry->SetCursorPosition(cursorPos);
     redrawCanvas();
     lastZoom = mCurrentZoom;
+  }
+  //Size
+  static auto lastSize = mGui.notebook->GetAllocation();
+  auto currentSize = mGui.notebook->GetAllocation();
+  if (lastSize.width != currentSize.width || lastSize.height != currentSize.height)
+  {
+    lastSize = currentSize;
+    redrawCanvas();
   }
 }
 
