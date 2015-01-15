@@ -16,25 +16,47 @@
 
 #include <exception>
 
-Application::Application()
+#include <SFML/Window/Event.hpp>
+#include <SFML/Graphics/Image.hpp>
+
+#include <SFGUI/Button.hpp>
+#include <SFGUI/Frame.hpp>
+#include <SFGUI/Image.hpp>
+#include <SFGUI/Scale.hpp>
+#include <SFGUI/Window.hpp>
+#include <SFGUI/Entry.hpp>
+#include <SFGUI/RadioButton.hpp>
+#include <SFGUI/Box.hpp>
+#include <SFGUI/Label.hpp>
+#include <SFGUI/Notebook.hpp>
+#include <SFGUI/ToggleButton.hpp>
+
+Application::Application() :
+  mGui(*this),
+  mTilesetController(mTilesetManager, mGui.getDesktop())
 {
   initMainWindow();
-  initGui();
 }
 
 int Application::run()
 {
-  while (mMainWindow.isOpen())
+  while (mWindow.isOpen())
   {
-    sf::Event event;
-    while (mMainWindow.pollEvent(event))
+    while (mWindow.pollEvent(mEvent))
     {
-      if (event.type == sf::Event::Closed)
-        mMainWindow.close();
+      if (!mGui.handleEvent(mEvent))
+      {
+        if (mEvent.type == sf::Event::Closed)
+          mWindow.close();
+      }
     }
 
-    mMainWindow.clear();
-    mMainWindow.display();
+    mGui.update(0.016f);
+    mTilesetController.update();
+
+    mWindow.clear(sf::Color(200, 200, 200));
+    mGui.display();
+    mWindow.display();
   }
 
   return 0;
@@ -42,13 +64,7 @@ int Application::run()
 
 void Application::initMainWindow()
 {
-  mMainWindow.create({ 1200, 750 }, "Kroniax2-Mapeditor");
-  mMainWindow.setVerticalSyncEnabled(true);
-}
-
-void Application::initGui()
-{
-  mGui.setWindow(mMainWindow);
-  mGui.setGlobalFont("data/fonts/DejaVu.ttf");
+  mWindow.create({ 1200, 750 }, "Kroniax2-Mapeditor");
+  mWindow.setVerticalSyncEnabled(true);
 }
 

@@ -15,12 +15,18 @@
 #define APPLICATION_HPP
 
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Window/Event.hpp>
 
-#include <TGUI/Gui.hpp>
+#include "editor/gui.hpp"
+#include "editor/tilesetManager.hpp"
+#include "editor/tilesetController.hpp"
 
 class Application
 {
 public:
+  //Allow the Gui class to access the member.
+  friend class Gui;
+
   Application();
 
   int run();
@@ -28,11 +34,14 @@ public:
 private:
 
   void initMainWindow();
-  void initGui();
 
 private:
-  sf::RenderWindow mMainWindow;
-  tgui::Gui mGui;
+
+  sf::RenderWindow mWindow;
+  sf::Event mEvent;
+  Gui mGui;
+  TilesetManager mTilesetManager;
+  TilesetController mTilesetController;
 };
 
 #endif
