@@ -1,25 +1,26 @@
 #ifndef TILESETCONTROLLER_HPP
 #define TILESETCONTROLLER_HPP
 
-#include <SFML/Graphics/RenderTexture.hpp>
+#include <memory>
 
-#include <SFGUI/Canvas.hpp>
-#include <SFGUI/Entry.hpp>
-#include <SFGUI/Notebook.hpp>
-#include <SFGUI/Scale.hpp>
-#include <SFGUI/Scrollbar.hpp>
-#include <SFGUI/Window.hpp>
+#include <SFML/Graphics/RenderTexture.hpp>
 
 namespace sfg
 {
   class Desktop;
+  class Canvas;
+  class Entry;
+  class Notebook;
+  class Scale;
+  class Scrollbar;
+  class Window;
 }
 
 struct TilesetPage
 {
-  sfg::Canvas::Ptr canvas;
-  sfg::Scrollbar::Ptr hScrollbar;
-  sfg::Scrollbar::Ptr vScrollbar;
+  std::shared_ptr<sfg::Canvas> canvas;
+  std::shared_ptr<sfg::Scrollbar> hScrollbar;
+  std::shared_ptr<sfg::Scrollbar> vScrollbar;
   std::string texName;
 };
 
@@ -60,13 +61,13 @@ private:
 
   struct
   {
-    sfg::Notebook::Ptr notebook = nullptr;
-    sfg::Window::Ptr loadTilesetDialog = nullptr;
-    sfg::Entry::Ptr loadTilesetName = nullptr;
+    std::shared_ptr<sfg::Notebook> notebook = nullptr;
+    std::shared_ptr<sfg::Window> loadTilesetDialog = nullptr;
+    std::shared_ptr<sfg::Entry> loadTilesetName = nullptr;
     std::vector<TilesetPage> tilesetPages;
     TilesetPage* activePage = nullptr;
-    sfg::Scale::Ptr zoomScale = nullptr;
-    sfg::Entry::Ptr zoomEntry = nullptr;
+    std::shared_ptr<sfg::Scale> zoomScale = nullptr;
+    std::shared_ptr<sfg::Entry> zoomEntry = nullptr;
   } mGui;
 };
 

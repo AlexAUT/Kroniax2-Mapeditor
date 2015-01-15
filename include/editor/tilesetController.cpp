@@ -8,11 +8,16 @@
 #include <SFGUI/Adjustment.hpp>
 #include <SFGUI/Box.hpp>
 #include <SFGUI/Button.hpp>
+#include <SFGUI/Canvas.hpp>
 #include <SFGUI/Desktop.hpp>
+#include <SFGUI/Entry.hpp>
 #include <SFGUI/Frame.hpp>
 #include <SFGUI/Image.hpp>
 #include <SFGUI/Label.hpp>
+#include <SFGUI/Notebook.hpp>
 #include <SFGUI/Scale.hpp>
+#include <SFGUI/Scrollbar.hpp>
+#include <SFGUI/Window.hpp>
 
 TilesetController::TilesetController(TilesetManager &tilesetManager, sfg::Desktop &desktop) :
   mTilesetManager(tilesetManager),
