@@ -1,7 +1,8 @@
 #ifndef TILESET_MANAGER_HPP
 #define TILESET_MANAGER_HPP
 
-#include <map>
+#include <vector>
+#include <utility>
 
 #include <SFML/Graphics/Texture.hpp>
 
@@ -13,6 +14,7 @@ public:
   bool loadTileset(const std::string &name);
   void removeTileset(const std::string &name);
 
+  int getTilesetIndex(const std::string &name) const;
   const sf::Texture& getTileset(const std::string &name) const;
 
   std::size_t getTilesetCount() const;
@@ -25,7 +27,7 @@ public:
 private:
 
 private:
-  std::map<std::string, sf::Texture> mTilesets;
+  std::vector<std::pair<std::string, sf::Texture>> mTilesets;
 };
 
 #endif

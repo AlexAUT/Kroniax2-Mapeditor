@@ -6,34 +6,44 @@
 
 bool TilesetManager::loadTileset(const std::string &name)
 {
-  auto found = mTilesets.find(name);
-  if (found == mTilesets.end())
+  auto found = getTilesetIndex(name);
+  if (found == -1)
   {
-    auto it = mTilesets.insert({ name, sf::Texture() });
-    if (!it.first->second.loadFromFile("data/tilesets/" + name))
+    mTilesets.push_back({ name, sf::Texture() });
+    if (!mTilesets.back().second.loadFromFile("data/tilesets/" + name))
     {
-      mTilesets.erase(it.first);
+      std::cout << "Failed" << std::endl;
+      mTilesets.pop_back();
       return false;
     }
   }
-
   return true;
 }
 
 void TilesetManager::removeTileset(const std::string &name)
 {
-  auto found = mTilesets.find(name);
-  if (found != mTilesets.end())
+  auto found = getTilesetIndex(name);
+  if (found != -1)
   {
-    mTilesets.erase(found);
+    mTilesets.erase(mTilesets.begin() + found);
   }
+}
+
+int TilesetManager::getTilesetIndex(const std::string &name) const
+{
+  for (int i = 0; i < static_cast<int>(mTilesets.size()); i++)
+  {
+    if (mTilesets[i].first == name)
+      return i;
+  }
+  return -1;
 }
 
 const sf::Texture& TilesetManager::getTileset(const std::string &name) const
 {
-  auto found = mTilesets.find(name);
-  assert(found != mTilesets.end());
-  return found->second;
+  auto index = getTilesetIndex(name);
+  assert(index != -1);
+  return mTilesets[index].second;
 }
 
 std::size_t TilesetManager::getTilesetCount() const
