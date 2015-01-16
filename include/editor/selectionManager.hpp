@@ -3,6 +3,8 @@
 
 #include <cstddef>
 
+#include <SFML/System/Vector2.hpp>
+
 namespace sf
 {
   class Texture;
@@ -12,7 +14,10 @@ class TilesetManager;
 
 struct Selection
 {
-  std::size_t texIndex;
+  const sf::Texture *tex;
+  int texIndex;
+  sf::Vector2i selectedTile;
+  sf::Vector2i tileSize;
   short rotation;
 };
 
@@ -21,8 +26,11 @@ class SelectionManager
 public:
   SelectionManager(TilesetManager &tilesetManager);
 
-  void setTexture(std::size_t index);
+  void setTexture(const sf::Texture *tex);
+  void setTextureIndex(int index);
   void setRotation(short rotation);
+  void setSelectedTile(sf::Vector2i tileIndex);
+  void setTileSize(sf::Vector2i tileSize);
 
   const Selection& getSelection() const;
 

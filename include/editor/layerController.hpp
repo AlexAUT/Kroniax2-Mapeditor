@@ -5,6 +5,7 @@
 #include <string>
 
 class LayerManager;
+class SelectionManager;
 
 namespace sfg
 {
@@ -17,7 +18,8 @@ namespace sfg
 class LayerController
 {
 public:
-  LayerController(LayerManager &layerManager, sfg::Desktop &desktop);
+  LayerController(LayerManager &layerManager, SelectionManager &selectionManager, sfg::Desktop &desktop,
+    bool &usedEvent);
 private:
 
   void changeActiveLayer(const std::string &name);
@@ -32,7 +34,9 @@ private:
 
 private:
   LayerManager &mLayerManager;
+  SelectionManager &mSelectionManager;
   sfg::Desktop &mDesktop;
+  bool &mUsedEvent;
 
   struct
   {

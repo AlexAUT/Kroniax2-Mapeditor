@@ -50,6 +50,8 @@ private:
   LayerController mLayerController;
   SelectionManager mSelectionManager;
   SelectionController mSelectionController;
+
+  bool mGuiUsedEvent;
 };
 
 #endif

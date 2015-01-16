@@ -32,11 +32,11 @@
 #include <SFGUI/ToggleButton.hpp>
 
 Application::Application() :
-  mGui(*this),
-  mTilesetController(mWindow, mTilesetManager, mSelectionManager, mGui.getDesktop()),
-  mLayerController(mLayerManager, mGui.getDesktop()),
+  mGui(*this, mGuiUsedEvent),
+  mTilesetController(mWindow, mTilesetManager, mSelectionManager, mGui.getDesktop(), mGuiUsedEvent),
+  mLayerController(mLayerManager, mSelectionManager, mGui.getDesktop(), mGuiUsedEvent),
   mSelectionManager(mTilesetManager),
-  mSelectionController(mSelectionManager, mGui.getDesktop())
+  mSelectionController(mSelectionManager, mGui.getDesktop(), mGuiUsedEvent)
 {
   initMainWindow();
 }
@@ -45,6 +45,7 @@ int Application::run()
 {
   while (mWindow.isOpen())
   {
+    mGuiUsedEvent = false;
     while (mWindow.pollEvent(mEvent))
     {
       if (!mGui.handleEvent(mEvent))
@@ -56,6 +57,7 @@ int Application::run()
 
     mGui.update(0.016f);
     mTilesetController.update();
+    mSelectionController.update();
 
     mWindow.clear(sf::Color(200, 200, 200));
     mGui.display();

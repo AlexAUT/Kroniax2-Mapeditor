@@ -8,6 +8,8 @@ class Layer
 public:
   Layer(sf::Vector2i tileSize);
 
+  sf::Vector2i getTileSize() const;
+
   void toggleVisible();
   bool getVisible() const;
 

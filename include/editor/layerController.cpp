@@ -1,6 +1,7 @@
 #include "layerController.hpp"
 
 #include "layerManager.hpp"
+#include "selectionManager.hpp"
 
 #include <SFGUI/Alignment.hpp>
 #include <SFGUI/Box.hpp>
@@ -17,9 +18,12 @@
 #include <SFGUI/ToggleButton.hpp>
 #include <SFGUI/Window.hpp>
 
-LayerController::LayerController(LayerManager &layerManager, sfg::Desktop &desktop) :
+LayerController::LayerController(LayerManager &layerManager, SelectionManager &selectionManager, sfg::Desktop &desktop,
+  bool &usedEvent) :
   mLayerManager(layerManager),
-  mDesktop(desktop)
+  mSelectionManager(selectionManager),
+  mDesktop(desktop),
+  mUsedEvent(event);
 {
   initGui();
 }
@@ -27,6 +31,7 @@ LayerController::LayerController(LayerManager &layerManager, sfg::Desktop &deskt
 void LayerController::changeActiveLayer(const std::string &name)
 {
    mLayerManager.setActiveLayer(name);
+   mSelectionManager.setTileSize(mLayerManager.getActiveLayer().getTileSize());
    std::cout << "active layer: " << mLayerManager.getActiveLayerName() << std::endl;
 }
 
@@ -129,6 +134,7 @@ void LayerController::initLayerWindow()
 
   auto window = sfg::Window::Create(sfg::Window::Style::BACKGROUND | sfg::Window::Style::SHADOW |
     sfg::Window::Style::TITLEBAR | sfg::Window::Style::RESIZE);
+  window->GetSignal(sfg::Window::OnLeftClick).Connect([this](){ mUsedEvent = true; });
 
   window->Add(box);
   window->SetTitle("Layers");
@@ -170,6 +176,7 @@ void LayerController::initNewLayerDialog()
 
   mGui.newLayerDialog = sfg::Window::Create(sfg::Window::Style::BACKGROUND |
     sfg::Window::Style::SHADOW | sfg::Window::Style::TITLEBAR);
+  mGui.newLayerDialog->GetSignal(sfg::Window::OnLeftClick).Connect([this](){ mUsedEvent = true; });
   mGui.newLayerDialog->SetTitle("Create new Layer");
   mGui.newLayerDialog->Add(box);
   mDesktop.Add(mGui.newLayerDialog);

@@ -2,7 +2,11 @@
 
 #include "selectionManager.hpp"
 
+#include <SFML/Graphics/Image.hpp>
+
+#include <SFGUI/Alignment.hpp>
 #include <SFGUI/Box.hpp>
+#include <SFGUI/Canvas.hpp>
 #include <SFGUI/Desktop.hpp>
 #include <SFGUI/Frame.hpp>
 #include <SFGUI/Label.hpp>
@@ -10,11 +14,58 @@
 #include <SFGUI/Scale.hpp>  
 #include <SFGUI/Window.hpp>
 
-SelectionController::SelectionController(SelectionManager &selectionManager, sfg::Desktop &desktop) :
+SelectionController::SelectionController(SelectionManager &selectionManager, sfg::Desktop &desktop,
+    bool &usedEvent) :
   mSelectionManager(selectionManager),
-  mDesktop(desktop)
+  mDesktop(desktop),
+  mUsedEvent(usedEvent)
 {
   initGui();
+
+  sf::Image img;
+  img.create(25, 25, { 0, 0, 0 });
+  mSampleTexture.loadFromImage(img);
+}
+
+void SelectionController::update()
+{
+  auto selection = mSelectionManager.getSelection();
+
+  if (selection.texIndex >= 0)
+  {
+    if (selection.selectedTile.x >= 0 && selection.selectedTile.y >= 0)
+    {
+      mTilePreview.setTextureRect({
+        selection.selectedTile.x * selection.tileSize.x,
+        selection.selectedTile.y * selection.tileSize.y,
+        selection.tileSize.x, selection.tileSize.y
+      });
+      mTilePreview.setTexture(*selection.tex);
+      mTilePreview.setOrigin({ mTilePreview.getGlobalBounds().width / 2, mTilePreview.getGlobalBounds().height / 2 });
+      mTilePreview.setPosition(mTilePreview.getOrigin());
+      mTilePreview.setRotation(selection.rotation);
+      mPreviewCanvas->SetRequisition({ static_cast<float>(selection.tileSize.x),
+        static_cast<float>(selection.tileSize.y) });
+    }
+    else
+    {
+      mTilePreview.setTexture(mSampleTexture);
+      mPreviewCanvas->SetRequisition({ 25.f, 25.f });
+    }
+  }
+  else
+  {
+    mTilePreview.setTexture(mSampleTexture);
+    mPreviewCanvas->SetRequisition({ 25.f, 25.f });
+  }
+  redrawCanvas();
+}
+
+void SelectionController::redrawCanvas()
+{
+  mPreviewCanvas->Clear();
+  mPreviewCanvas->Draw(mTilePreview);
+  mPreviewCanvas->Display();
 }
 
 void SelectionController::initGui()
@@ -87,15 +138,20 @@ void SelectionController::initGui()
   box->Pack(frame, false);
 
   //PREVIEW
-//  frame = sfg::Frame::Create("Preview tile");
-//  sfImg.create(25, 25, { 255, 255, 255 });
-//  auto img = sfg::Image::Create(sfImg);
-//  frame->Add(img);
+  frame = sfg::Frame::Create("Preview tile");
+  mPreviewCanvas = sfg::Canvas::Create();
+  mPreviewCanvas->SetRequisition({ 25, 25 });
+  auto align = sfg::Alignment::Create();
+  align->SetScale({ 0.f, 0.f });
+  align->SetAlignment({ 0.5f, 0.5f });
+  align->Add(mPreviewCanvas);
+  frame->Add(align);
 
- // box->Pack(frame, true);
+  box->Pack(frame, false, false);
 
   auto window = sfg::Window::Create(sfg::Window::Style::BACKGROUND | sfg::Window::Style::SHADOW |
     sfg::Window::Style::TITLEBAR);
+  window->GetSignal(sfg::Window::OnLeftClick).Connect([this](){ mUsedEvent = true; });
   window->SetTitle("Drawing mode");
   window->Add(box);
   mDesktop.Add(window);

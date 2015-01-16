@@ -6,6 +6,11 @@ Layer::Layer(sf::Vector2i tileSize):
 
 }
 
+sf::Vector2i Layer::getTileSize() const
+{
+  return mTileSize;
+}
+
 void Layer::toggleVisible()
 {
   mVisible = !mVisible;

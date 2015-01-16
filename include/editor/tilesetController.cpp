@@ -22,11 +22,12 @@
 #include <SFGUI/Window.hpp>
 
 TilesetController::TilesetController(sf::Window &window, TilesetManager &tilesetManager, SelectionManager &selectionManager,
-              sfg::Desktop &desktop) :
+              sfg::Desktop &desktop, bool &usedEvent) :
   mWindow(window),
   mTilesetManager(tilesetManager),
   mSelectionManager(selectionManager),
-  mDesktop(desktop)
+  mDesktop(desktop),
+  mUsedEvent(usedEvent)
 {
   initGui();
 }
@@ -58,6 +59,7 @@ void TilesetController::update()
   }
 
   updateMouseOverTile();
+  redrawCanvas();
 }
 
 void TilesetController::redrawCanvas()
@@ -118,41 +120,57 @@ void TilesetController::redrawCanvas()
 
 void TilesetController::updateSelectedTile()
 {
-  if (mTileSize.x > 0 && mTileSize.y > 0)
+  auto tileSize = mSelectionManager.getSelection().tileSize;
+  auto tile = getTileMouseIsOver();
+  auto currentTex = mTilesetManager.getTileset(mGui.activePage->texName);
+  if (tileSize.x > 0 && tileSize.y > 0)
   {
-    auto tile = getTileMouseIsOver();
-    mSelectedTile = tile;
-    std::cout << "Selected tile: " << mSelectedTile.x << " | " << mSelectedTile.y << std::endl;
-    mSelectionRect.setSize(static_cast<sf::Vector2f>(mTileSize));
-    mSelectionRect.setScale(mRenderSprite.getScale());
-    sf::Vector2f pos = {
-      static_cast<float>(mSelectedTile.x * mTileSize.x) * mRenderSprite.getScale().x,
-      static_cast<float>(mSelectedTile.y * mTileSize.y) * mRenderSprite.getScale().y
-    };
-    mSelectionRect.setPosition(pos);
-    mSelectionRect.setFillColor(sf::Color(0, 200, 12, 125));
-
-    redrawCanvas();
+    if (tile.x >= 0 && (tile.x + 1) * tileSize.x <= static_cast<int>(currentTex.getSize().x) &&
+      tile.y >= 0 && (tile.y + 1) * tileSize.y <= static_cast<int>(currentTex.getSize().y))
+    {
+      mSelectedTile = tile;
+      mSelectionManager.setSelectedTile(mSelectedTile);
+      std::cout << "Selected tile: " << mSelectedTile.x << " | " << mSelectedTile.y << std::endl;
+      mSelectionRect.setSize(static_cast<sf::Vector2f>(tileSize));
+      mSelectionRect.setScale(mRenderSprite.getScale());
+      sf::Vector2f pos = {
+        static_cast<float>(mSelectedTile.x * tileSize.x) * mRenderSprite.getScale().x,
+        static_cast<float>(mSelectedTile.y * tileSize.y) * mRenderSprite.getScale().y
+      };
+      mSelectionRect.setPosition(pos);
+      mSelectionRect.setFillColor(sf::Color(0, 200, 12, 125));
+    }
   }
 }
 
 void TilesetController::updateMouseOverTile()
 {
-  if (mTileSize.x > 0 && mTileSize.y > 0 && mTilesetManager.getTilesetCount() > 0)
+  auto tileSize = mSelectionManager.getSelection().tileSize;
+  if (tileSize.x > 0 && tileSize.y > 0 && mTilesetManager.getTilesetCount() > 0)
   {
     auto tile = getTileMouseIsOver();
-    mMouseOverTile = tile;
+    auto currentTex = mTilesetManager.getTileset(mGui.activePage->texName);
+    if (tile.x < 0 || (tile.x + 1) * tileSize.x > static_cast<int>(currentTex.getSize().x) ||
+      tile.y < 0 || (tile.y + 1) * (tileSize.y) > static_cast<int>(currentTex.getSize().y))
+    {
+      //Hide mouseOver because we are not on the image
+      mMouseOverRect.setSize({ 0.f, 0.f });
+    }
+    else
+    {
+      mMouseOverTile = tile;
 
-    mMouseOverRect.setSize(static_cast<sf::Vector2f>(mTileSize));
-    mMouseOverRect.setScale(mRenderSprite.getScale());
-    sf::Vector2f pos = {
-      static_cast<float>(mMouseOverTile.x * mTileSize.x) * mRenderSprite.getScale().x,
-      static_cast<float>(mMouseOverTile.y * mTileSize.y) * mRenderSprite.getScale().y
-    };
-    mMouseOverRect.setPosition(pos);
-    mMouseOverRect.setFillColor(sf::Color(200, 12, 0, 125));
+      mMouseOverRect.setSize(static_cast<sf::Vector2f>(tileSize));
+      mMouseOverRect.setScale(mRenderSprite.getScale());
+      sf::Vector2f pos = {
+        static_cast<float>(mMouseOverTile.x * tileSize.x) * mRenderSprite.getScale().x,
+        static_cast<float>(mMouseOverTile.y * tileSize.y) * mRenderSprite.getScale().y
+      };
+      mMouseOverRect.setPosition(pos);
+      mMouseOverRect.setFillColor(sf::Color(200, 12, 0, 125));
 
     redrawCanvas();
+    }
   }
 }
 
@@ -171,10 +189,10 @@ sf::Vector2i TilesetController::getTileMouseIsOver()
   mousePos.y /= mRenderSprite.getScale().y;
   // mousePos -= static_cast<sf::Vector2i>(mTilesetManager.getTileset(mGui.activePage->texName).getSize()) / 2;
   std::cout << "MousePos on tileset: " << mousePos.x << " | " << mousePos.y << std::endl;
-
+  auto tileSize = mSelectionManager.getSelection().tileSize;
   sf::Vector2i tile = {
-    static_cast<int>(mousePos.x) / mTileSize.x,
-    static_cast<int>(mousePos.y) / mTileSize.y
+    static_cast<int>(mousePos.x) / tileSize.x,
+    static_cast<int>(mousePos.y) / tileSize.y
   };
   return tile;
 }
@@ -212,7 +230,8 @@ void TilesetController::updateActiveCanvas()
     if (ptr != mGui.activePage)
     {
       mGui.activePage = ptr;
-      mSelectionManager.setTexture(mTilesetManager.getTilesetIndex(mGui.activePage->texName));
+      mSelectionManager.setTextureIndex(mTilesetManager.getTilesetIndex(mGui.activePage->texName));
+      mSelectionManager.setTexture(&mTilesetManager.getTileset(mGui.activePage->texName));
       redrawCanvas();
     }
   }
@@ -318,6 +337,7 @@ void TilesetController::initTilesetWindow()
 
 
   auto window = sfg::Window::Create(sfg::Window::Style::TOPLEVEL | sfg::Window::Style::SHADOW);
+  window->GetSignal(sfg::Window::OnLeftClick).Connect([this](){ mUsedEvent = true; });
   window->SetTitle("Tilemaps");
   window->Add(box);
   mDesktop.Add(window);
@@ -327,6 +347,7 @@ void TilesetController::initLoadTilesetDialog()
 {
   mGui.loadTilesetDialog = sfg::Window::Create(sfg::Window::Style::BACKGROUND |
     sfg::Window::Style::TITLEBAR);
+  mGui.loadTilesetDialog->GetSignal(sfg::Window::OnLeftClick).Connect([this](){ mUsedEvent = true; });
   mGui.loadTilesetDialog->SetTitle("Load new Tileset");
 
   auto box = sfg::Box::Create(sfg::Box::Orientation::VERTICAL, 5.f);

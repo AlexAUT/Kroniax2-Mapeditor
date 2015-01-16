@@ -11,8 +11,9 @@
 #include <SFGUI/Window.hpp>
 
 
-Gui::Gui(Application &application) :
-  mApplication(application)
+Gui::Gui(Application &application, bool &usedEvent) :
+  mApplication(application),
+  mUsedEvent(usedEvent)
 {
   initGui();
 }
@@ -78,6 +79,7 @@ void Gui::initMenuBar()
 
   //Add everything to window
   auto window = sfg::Window::Create(sfg::Window::Style::BACKGROUND | sfg::Window::Style::SHADOW);
+  window->GetSignal(sfg::Window::OnLeftClick).Connect([this](){ mUsedEvent = true; });
   window->Add(box);
   mDesktop.Add(window);
 }
