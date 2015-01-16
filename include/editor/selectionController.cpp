@@ -27,12 +27,12 @@ void SelectionController::initGui()
   frame->Add(subBox);
 
   auto radioButton = sfg::RadioButton::Create("0°");
+  radioButton->SetActive(true);
   radioButton->GetSignal(sfg::RadioButton::OnToggle).Connect([this, radioButton](){
     if (radioButton->IsActive())
       mSelectionManager.setRotation(0);
   });
   subBox->Pack(radioButton);
-  radioButton->SetActive(true);
   radioButton = sfg::RadioButton::Create("90°", radioButton->GetGroup());
   radioButton->GetSignal(sfg::RadioButton::OnToggle).Connect([this, radioButton](){
     if (radioButton->IsActive())

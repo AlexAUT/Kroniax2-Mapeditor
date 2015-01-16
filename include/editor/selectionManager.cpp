@@ -3,13 +3,15 @@
 #include <iostream>
 
 SelectionManager::SelectionManager(TilesetManager &tilesetManager) :
-  mTilesetManager(tilesetManager)
+  mTilesetManager(tilesetManager),
+  mSelection({-1, 0})
 {
-
+  
 }
 
 void SelectionManager::setTexture(std::size_t index)
 {
+  std::cout << "Change selected texture to " << index << std::endl;
   mSelection.texIndex = index;
 }
 

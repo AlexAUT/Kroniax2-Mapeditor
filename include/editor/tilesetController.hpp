@@ -25,11 +25,13 @@ struct TilesetPage
 };
 
 class TilesetManager;
+class SelectionManager;
 
 class TilesetController
 {
 public:
-  TilesetController(TilesetManager &tilesetManager, sfg::Desktop &desktop);
+  TilesetController(TilesetManager &tilesetManager, SelectionManager &selectionManager,
+    sfg::Desktop &desktop);
 
   void update();
 
@@ -53,6 +55,7 @@ private:
 
 private:
   TilesetManager &mTilesetManager;
+  SelectionManager &mSelectionManager;
   sfg::Desktop &mDesktop;
 
   sf::RenderTexture mRenderTex;

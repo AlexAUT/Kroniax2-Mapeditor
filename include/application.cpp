@@ -33,7 +33,7 @@
 
 Application::Application() :
   mGui(*this),
-  mTilesetController(mTilesetManager, mGui.getDesktop()),
+  mTilesetController(mTilesetManager, mSelectionManager, mGui.getDesktop()),
   mLayerController(mLayerManager, mGui.getDesktop()),
   mSelectionManager(mTilesetManager),
   mSelectionController(mSelectionManager, mGui.getDesktop())

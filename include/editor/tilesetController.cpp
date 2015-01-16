@@ -1,6 +1,7 @@
 #include "tilesetController.hpp"
 
 #include "tilesetManager.hpp"
+#include "selectionManager.hpp"
 
 #include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -19,8 +20,10 @@
 #include <SFGUI/Scrollbar.hpp>
 #include <SFGUI/Window.hpp>
 
-TilesetController::TilesetController(TilesetManager &tilesetManager, sfg::Desktop &desktop) :
+TilesetController::TilesetController(TilesetManager &tilesetManager, SelectionManager &selectionManager,
+              sfg::Desktop &desktop) :
   mTilesetManager(tilesetManager),
+  mSelectionManager(selectionManager),
   mDesktop(desktop)
 {
   initGui();
@@ -143,6 +146,7 @@ void TilesetController::updateActiveCanvas()
     if (ptr != mGui.activePage)
     {
       mGui.activePage = ptr;
+      mSelectionManager.setTexture(mTilesetManager.getTilesetIndex(mGui.activePage->texName));
       redrawCanvas();
     }
   }
