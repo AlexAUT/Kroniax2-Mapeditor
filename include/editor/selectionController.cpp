@@ -151,7 +151,8 @@ void SelectionController::initGui()
 
   auto window = sfg::Window::Create(sfg::Window::Style::BACKGROUND | sfg::Window::Style::SHADOW |
     sfg::Window::Style::TITLEBAR);
-  window->GetSignal(sfg::Window::OnLeftClick).Connect([this](){ mUsedEvent = true; });
+  window->GetSignal(sfg::Window::OnMouseLeftPress).Connect([this](){ mUsedEvent = true; });
+  window->GetSignal(sfg::Window::OnMouseMove).Connect([this](){ mUsedEvent = true; });
   window->SetTitle("Drawing mode");
   window->Add(box);
   mDesktop.Add(window);

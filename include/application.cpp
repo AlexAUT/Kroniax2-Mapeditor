@@ -36,7 +36,8 @@ Application::Application() :
   mTilesetController(mWindow, mTilesetManager, mSelectionManager, mGui.getDesktop(), mGuiUsedEvent),
   mLayerController(mLayerManager, mSelectionManager, mGui.getDesktop(), mGuiUsedEvent),
   mSelectionManager(mTilesetManager),
-  mSelectionController(mSelectionManager, mGui.getDesktop(), mGuiUsedEvent)
+  mSelectionController(mSelectionManager, mGui.getDesktop(), mGuiUsedEvent),
+  mDrawingController(mSelectionManager)
 {
   initMainWindow();
 }
@@ -53,6 +54,10 @@ int Application::run()
         if (mEvent.type == sf::Event::Closed)
           mWindow.close();
       }
+      if (!mGuiUsedEvent)
+      {
+        mDrawingController.handleEvent(mEvent);
+      }
     }
 
     mGui.update(0.016f);
@@ -60,6 +65,7 @@ int Application::run()
     mSelectionController.update();
 
     mWindow.clear(sf::Color(200, 200, 200));
+    mDrawingController.render(mWindow);
     mGui.display();
     mWindow.display();
   }

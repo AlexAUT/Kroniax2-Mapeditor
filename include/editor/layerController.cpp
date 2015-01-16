@@ -23,7 +23,7 @@ LayerController::LayerController(LayerManager &layerManager, SelectionManager &s
   mLayerManager(layerManager),
   mSelectionManager(selectionManager),
   mDesktop(desktop),
-  mUsedEvent(event);
+  mUsedEvent(usedEvent)
 {
   initGui();
 }
@@ -134,7 +134,8 @@ void LayerController::initLayerWindow()
 
   auto window = sfg::Window::Create(sfg::Window::Style::BACKGROUND | sfg::Window::Style::SHADOW |
     sfg::Window::Style::TITLEBAR | sfg::Window::Style::RESIZE);
-  window->GetSignal(sfg::Window::OnLeftClick).Connect([this](){ mUsedEvent = true; });
+  window->GetSignal(sfg::Window::OnMouseLeftPress).Connect([this](){ mUsedEvent = true; });
+  window->GetSignal(sfg::Window::OnMouseMove).Connect([this](){ mUsedEvent = true; });
 
   window->Add(box);
   window->SetTitle("Layers");
@@ -176,7 +177,8 @@ void LayerController::initNewLayerDialog()
 
   mGui.newLayerDialog = sfg::Window::Create(sfg::Window::Style::BACKGROUND |
     sfg::Window::Style::SHADOW | sfg::Window::Style::TITLEBAR);
-  mGui.newLayerDialog->GetSignal(sfg::Window::OnLeftClick).Connect([this](){ mUsedEvent = true; });
+  mGui.newLayerDialog->GetSignal(sfg::Window::OnMouseLeftPress).Connect([this](){ mUsedEvent = true; });
+  mGui.newLayerDialog->GetSignal(sfg::Window::OnMouseMove).Connect([this](){ mUsedEvent = true; });
   mGui.newLayerDialog->SetTitle("Create new Layer");
   mGui.newLayerDialog->Add(box);
   mDesktop.Add(mGui.newLayerDialog);

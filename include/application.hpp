@@ -24,6 +24,7 @@
 #include "editor/layerManager.hpp"
 #include "editor/selectionController.hpp"
 #include "editor/selectionManager.hpp"
+#include "editor/drawingController.hpp"
 
 class Application
 {
@@ -50,6 +51,7 @@ private:
   LayerController mLayerController;
   SelectionManager mSelectionManager;
   SelectionController mSelectionController;
+  DrawingController mDrawingController;
 
   bool mGuiUsedEvent;
 };

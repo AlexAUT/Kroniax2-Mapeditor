@@ -66,12 +66,12 @@ void TilesetController::redrawCanvas()
 {
   if (mGui.tilesetPages.size() != 0)
   {
-    std::cout << "Redraw, canvas: " << mGui.activePage->texName << std::endl;
+    //std::cout << "Redraw, canvas: " << mGui.activePage->texName << std::endl;
     auto &tex = mTilesetManager.getTileset(mGui.activePage->canvas->GetId());
     if (mRenderTex.getSize() != sf::Vector2u(static_cast<unsigned>(mGui.activePage->canvas->GetAllocation().width), 
       static_cast<unsigned>(mGui.activePage->canvas->GetAllocation().height)))
     {
-      std::cout << "Recreated texture" << std::endl;
+      //std::cout << "Recreated texture" << std::endl;
       mRenderTex.create(static_cast<unsigned>(mGui.activePage->canvas->GetAllocation().width),
         static_cast<unsigned>(mGui.activePage->canvas->GetAllocation().height));
     }
@@ -87,10 +87,9 @@ void TilesetController::redrawCanvas()
     mRenderTex.draw(mSelectionRect);
     mRenderTex.display();
     sf::Sprite sprite2(mRenderTex.getTexture());
-    std::cout << "Draw" << std::endl;
     mGui.activePage->canvas->Clear();
     mGui.activePage->canvas->Draw(sprite2);
-    std::cout << "Offset: " << mCurrentOffset.x << " | " << mCurrentOffset.y << std::endl;
+    //std::cout << "Offset: " << mCurrentOffset.x << " | " << mCurrentOffset.y << std::endl;
     auto difference_x = mRenderSprite.getGlobalBounds().width - mRenderTex.getSize().x;
     if (difference_x > 0)
     {
@@ -337,7 +336,8 @@ void TilesetController::initTilesetWindow()
 
 
   auto window = sfg::Window::Create(sfg::Window::Style::TOPLEVEL | sfg::Window::Style::SHADOW);
-  window->GetSignal(sfg::Window::OnLeftClick).Connect([this](){ mUsedEvent = true; });
+  window->GetSignal(sfg::Window::OnMouseLeftPress).Connect([this](){ mUsedEvent = true; });
+  window->GetSignal(sfg::Window::OnMouseMove).Connect([this](){ mUsedEvent = true; });
   window->SetTitle("Tilemaps");
   window->Add(box);
   mDesktop.Add(window);
@@ -347,7 +347,8 @@ void TilesetController::initLoadTilesetDialog()
 {
   mGui.loadTilesetDialog = sfg::Window::Create(sfg::Window::Style::BACKGROUND |
     sfg::Window::Style::TITLEBAR);
-  mGui.loadTilesetDialog->GetSignal(sfg::Window::OnLeftClick).Connect([this](){ mUsedEvent = true; });
+  mGui.loadTilesetDialog->GetSignal(sfg::Window::OnMouseLeftPress).Connect([this](){ mUsedEvent = true; });
+  mGui.loadTilesetDialog->GetSignal(sfg::Window::OnMouseMove).Connect([this](){ mUsedEvent = true; });
   mGui.loadTilesetDialog->SetTitle("Load new Tileset");
 
   auto box = sfg::Box::Create(sfg::Box::Orientation::VERTICAL, 5.f);

@@ -79,7 +79,8 @@ void Gui::initMenuBar()
 
   //Add everything to window
   auto window = sfg::Window::Create(sfg::Window::Style::BACKGROUND | sfg::Window::Style::SHADOW);
-  window->GetSignal(sfg::Window::OnLeftClick).Connect([this](){ mUsedEvent = true; });
+  window->GetSignal(sfg::Window::OnMouseLeftPress).Connect([this](){ mUsedEvent = true; });
+  window->GetSignal(sfg::Window::OnMouseMove).Connect([this](){ mUsedEvent = true; });
   window->Add(box);
   mDesktop.Add(window);
 }
