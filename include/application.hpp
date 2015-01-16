@@ -22,6 +22,8 @@
 #include "editor/tilesetController.hpp"
 #include "editor/layerController.hpp"
 #include "editor/layerManager.hpp"
+#include "editor/selectionController.hpp"
+#include "editor/selectionManager.hpp"
 
 class Application
 {
@@ -46,6 +48,8 @@ private:
   TilesetController mTilesetController;
   LayerManager mLayerManager;
   LayerController mLayerController;
+  SelectionManager mSelectionManager;
+  SelectionController mSelectionController;
 };
 
 #endif
