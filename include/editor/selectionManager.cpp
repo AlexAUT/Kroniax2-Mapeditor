@@ -1,13 +1,25 @@
 #include "selectionManager.hpp"
 
+#include <iostream>
+
 SelectionManager::SelectionManager(TilesetManager &tilesetManager) :
   mTilesetManager(tilesetManager)
 {
 
 }
 
+void SelectionManager::setTexture(std::size_t index)
+{
+  mSelection.texIndex = index;
+}
+
+void SelectionManager::setRotation(short rotation)
+{
+  std::cout << "Changed rotation to " << rotation << std::endl;
+  mSelection.rotation = rotation;
+}
 
 const Selection& SelectionManager::getSelection() const
 {
-  mSelection;
+  return mSelection;
 }

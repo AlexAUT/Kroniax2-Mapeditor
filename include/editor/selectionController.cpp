@@ -1,5 +1,7 @@
 #include "selectionController.hpp"
 
+#include "selectionManager.hpp"
+
 #include <SFGUI/Box.hpp>
 #include <SFGUI/Desktop.hpp>
 #include <SFGUI/Frame.hpp>
@@ -25,13 +27,29 @@ void SelectionController::initGui()
   frame->Add(subBox);
 
   auto radioButton = sfg::RadioButton::Create("0°");
+  radioButton->GetSignal(sfg::RadioButton::OnToggle).Connect([this, radioButton](){
+    if (radioButton->IsActive())
+      mSelectionManager.setRotation(0);
+  });
   subBox->Pack(radioButton);
   radioButton->SetActive(true);
   radioButton = sfg::RadioButton::Create("90°", radioButton->GetGroup());
+  radioButton->GetSignal(sfg::RadioButton::OnToggle).Connect([this, radioButton](){
+    if (radioButton->IsActive())
+      mSelectionManager.setRotation(90);
+  });
   subBox->Pack(radioButton);
   radioButton = sfg::RadioButton::Create("180°", radioButton->GetGroup());
+  radioButton->GetSignal(sfg::RadioButton::OnToggle).Connect([this, radioButton](){
+    if (radioButton->IsActive())
+      mSelectionManager.setRotation(180);
+  });
   subBox->Pack(radioButton);
   radioButton = sfg::RadioButton::Create("270°", radioButton->GetGroup());
+  radioButton->GetSignal(sfg::RadioButton::OnToggle).Connect([this, radioButton](){
+    if (radioButton->IsActive())
+      mSelectionManager.setRotation(270);
+  });
   subBox->Pack(radioButton);
 
   box->Pack(frame, false);

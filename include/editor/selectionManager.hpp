@@ -1,6 +1,8 @@
 #ifndef SELECTION_MANAGER_HPP
 #define SELECTION_MANAGER_HPP
 
+#include <cstddef>
+
 namespace sf
 {
   class Texture;
@@ -10,7 +12,8 @@ class TilesetManager;
 
 struct Selection
 {
-  sf::Texture *tex = nullptr;
+  std::size_t texIndex;
+  short rotation;
 };
 
 class SelectionManager
@@ -18,7 +21,8 @@ class SelectionManager
 public:
   SelectionManager(TilesetManager &tilesetManager);
 
-  void setTexture();
+  void setTexture(std::size_t index);
+  void setRotation(short rotation);
 
   const Selection& getSelection() const;
 
