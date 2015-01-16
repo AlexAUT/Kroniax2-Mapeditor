@@ -4,6 +4,13 @@
 #include <memory>
 
 #include <SFML/Graphics/RenderTexture.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+
+namespace sf
+{
+  class Window;
+}
 
 namespace sfg
 {
@@ -30,7 +37,7 @@ class SelectionManager;
 class TilesetController
 {
 public:
-  TilesetController(TilesetManager &tilesetManager, SelectionManager &selectionManager,
+  TilesetController(sf::Window &window, TilesetManager &tilesetManager, SelectionManager &selectionManager,
     sfg::Desktop &desktop);
 
   void update();
@@ -39,6 +46,10 @@ public:
   void updateScrolbars();
 
 private:
+
+  void updateSelectedTile();
+  void updateMouseOverTile();
+  sf::Vector2i getTileMouseIsOver();
 
   void openLoadTilesetDialog();
   void loadNewTileset();
@@ -54,11 +65,21 @@ private:
   void initLoadTilesetDialog();
 
 private:
+  sf::Window &mWindow;
   TilesetManager &mTilesetManager;
   SelectionManager &mSelectionManager;
   sfg::Desktop &mDesktop;
 
+  sf::Vector2i mSelectedTile = { -1, -1 };
+  sf::Vector2i mMouseOverTile = { -1, -1 };
+  sf::Vector2i mTileSize = { 24, 24 };
+
+  sf::RectangleShape mSelectionRect;
+  sf::RectangleShape mMouseOverRect;
+
   sf::RenderTexture mRenderTex;
+  sf::Sprite mRenderSprite;
+  sf::View mView;
   float mCurrentZoom = 1.f;
   sf::Vector2f mCurrentOffset;
 

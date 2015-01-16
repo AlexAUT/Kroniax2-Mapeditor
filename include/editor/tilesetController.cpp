@@ -5,6 +5,7 @@
 
 #include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 
 #include <SFGUI/Adjustment.hpp>
 #include <SFGUI/Box.hpp>
@@ -20,8 +21,9 @@
 #include <SFGUI/Scrollbar.hpp>
 #include <SFGUI/Window.hpp>
 
-TilesetController::TilesetController(TilesetManager &tilesetManager, SelectionManager &selectionManager,
+TilesetController::TilesetController(sf::Window &window, TilesetManager &tilesetManager, SelectionManager &selectionManager,
               sfg::Desktop &desktop) :
+  mWindow(window),
   mTilesetManager(tilesetManager),
   mSelectionManager(selectionManager),
   mDesktop(desktop)
@@ -36,7 +38,6 @@ void TilesetController::update()
   if (lastOffset != mCurrentOffset)
   {
     lastOffset = mCurrentOffset;
-    redrawCanvas();
   }
   //Zoom
   static auto lastZoom = mCurrentZoom;
@@ -46,7 +47,6 @@ void TilesetController::update()
     auto cursorPos = mGui.zoomEntry->GetCursorPosition();
     mGui.zoomEntry->SetText(std::to_string(static_cast<int>(mCurrentZoom * 100)) + "%");
     mGui.zoomEntry->SetCursorPosition(cursorPos);
-    redrawCanvas();
     lastZoom = mCurrentZoom;
   }
   //Size
@@ -55,8 +55,9 @@ void TilesetController::update()
   if (lastSize.width != currentSize.width || lastSize.height != currentSize.height)
   {
     lastSize = currentSize;
-    redrawCanvas();
   }
+
+  updateMouseOverTile();
 }
 
 void TilesetController::redrawCanvas()
@@ -73,20 +74,22 @@ void TilesetController::redrawCanvas()
         static_cast<unsigned>(mGui.activePage->canvas->GetAllocation().height));
     }
 
-    sf::Sprite sprite(tex);
-    sprite.scale({ mCurrentZoom, mCurrentZoom });
-    auto view = mRenderTex.getDefaultView();
-    view.setCenter({ mCurrentOffset.x + sprite.getGlobalBounds().width / 2.f, mCurrentOffset.y + sprite.getGlobalBounds().height / 2.f });
-    mRenderTex.setView(view);
+    mRenderSprite = sf::Sprite(tex);
+    mRenderSprite.scale({ mCurrentZoom, mCurrentZoom });
+    mView = mRenderTex.getDefaultView();
+    mView.setCenter({ mCurrentOffset.x + mRenderSprite.getGlobalBounds().width / 2.f, mCurrentOffset.y + mRenderSprite.getGlobalBounds().height / 2.f });
+    mRenderTex.setView(mView);
     mRenderTex.clear();
-    mRenderTex.draw(sprite);
+    mRenderTex.draw(mRenderSprite);
+    mRenderTex.draw(mMouseOverRect);
+    mRenderTex.draw(mSelectionRect);
     mRenderTex.display();
     sf::Sprite sprite2(mRenderTex.getTexture());
     std::cout << "Draw" << std::endl;
     mGui.activePage->canvas->Clear();
     mGui.activePage->canvas->Draw(sprite2);
     std::cout << "Offset: " << mCurrentOffset.x << " | " << mCurrentOffset.y << std::endl;
-    auto difference_x = sprite.getGlobalBounds().width - mRenderTex.getSize().x;
+    auto difference_x = mRenderSprite.getGlobalBounds().width - mRenderTex.getSize().x;
     if (difference_x > 0)
     {
       mGui.activePage->hScrollbar->Show(true);
@@ -98,7 +101,7 @@ void TilesetController::redrawCanvas()
       mGui.activePage->hScrollbar->SetValue(0);
       mGui.activePage->hScrollbar->GetAdjustment()->Configure(0, 0, 0, 0, 0, 1);
     }
-    auto difference_y = sprite.getGlobalBounds().height - mRenderTex.getSize().y;
+    auto difference_y = mRenderSprite.getGlobalBounds().height - mRenderTex.getSize().y;
     if (difference_y > 0)
     {
       mGui.activePage->vScrollbar->Show(true);
@@ -111,6 +114,69 @@ void TilesetController::redrawCanvas()
       mGui.activePage->vScrollbar->GetAdjustment()->Configure(0, 0, 0, 0, 0, 1);
     }
   }
+}
+
+void TilesetController::updateSelectedTile()
+{
+  if (mTileSize.x > 0 && mTileSize.y > 0)
+  {
+    auto tile = getTileMouseIsOver();
+    mSelectedTile = tile;
+    std::cout << "Selected tile: " << mSelectedTile.x << " | " << mSelectedTile.y << std::endl;
+    mSelectionRect.setSize(static_cast<sf::Vector2f>(mTileSize));
+    mSelectionRect.setScale(mRenderSprite.getScale());
+    sf::Vector2f pos = {
+      static_cast<float>(mSelectedTile.x * mTileSize.x) * mRenderSprite.getScale().x,
+      static_cast<float>(mSelectedTile.y * mTileSize.y) * mRenderSprite.getScale().y
+    };
+    mSelectionRect.setPosition(pos);
+    mSelectionRect.setFillColor(sf::Color(0, 200, 12, 125));
+
+    redrawCanvas();
+  }
+}
+
+void TilesetController::updateMouseOverTile()
+{
+  if (mTileSize.x > 0 && mTileSize.y > 0 && mTilesetManager.getTilesetCount() > 0)
+  {
+    auto tile = getTileMouseIsOver();
+    mMouseOverTile = tile;
+
+    mMouseOverRect.setSize(static_cast<sf::Vector2f>(mTileSize));
+    mMouseOverRect.setScale(mRenderSprite.getScale());
+    sf::Vector2f pos = {
+      static_cast<float>(mMouseOverTile.x * mTileSize.x) * mRenderSprite.getScale().x,
+      static_cast<float>(mMouseOverTile.y * mTileSize.y) * mRenderSprite.getScale().y
+    };
+    mMouseOverRect.setPosition(pos);
+    mMouseOverRect.setFillColor(sf::Color(200, 12, 0, 125));
+
+    redrawCanvas();
+  }
+}
+
+sf::Vector2i TilesetController::getTileMouseIsOver()
+{
+  sf::Vector2f mousePos = static_cast<sf::Vector2f>(sf::Mouse::getPosition(mWindow));
+  mousePos = mousePos - (mGui.activePage->canvas->GetAbsolutePosition());
+  std::cout << "MosuePos on Canvas: " << mousePos.x << " | " << mousePos.y << std::endl;
+  sf::Vector2f difference = {
+    mRenderSprite.getGlobalBounds().width - mRenderTex.getSize().x,
+    mRenderSprite.getGlobalBounds().height - mRenderTex.getSize().y
+  };
+  //ABs current offset
+  mousePos += mCurrentOffset + (difference / 2.f);
+  mousePos.x /= mRenderSprite.getScale().x;
+  mousePos.y /= mRenderSprite.getScale().y;
+  // mousePos -= static_cast<sf::Vector2i>(mTilesetManager.getTileset(mGui.activePage->texName).getSize()) / 2;
+  std::cout << "MousePos on tileset: " << mousePos.x << " | " << mousePos.y << std::endl;
+
+  sf::Vector2i tile = {
+    static_cast<int>(mousePos.x) / mTileSize.x,
+    static_cast<int>(mousePos.y) / mTileSize.y
+  };
+  return tile;
 }
 
 void TilesetController::openLoadTilesetDialog()
@@ -183,6 +249,7 @@ void TilesetController::addTilesetToView(const std::string &name)
   auto canvas = sfg::Canvas::Create();
   canvas->SetId(name);
   canvas->SetRequisition({ 200, 200 });
+  canvas->GetSignal(sfg::Canvas::OnLeftClick).Connect(std::bind(&TilesetController::updateSelectedTile, this));
   subBox->Pack(canvas);
   auto vScrollbar = sfg::Scrollbar::Create(sfg::Scrollbar::Orientation::VERTICAL);
   vScrollbar->SetRequisition({ 18, 0 });
