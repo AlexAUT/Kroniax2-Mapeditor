@@ -5,9 +5,6 @@
 
 #include <SFGUI/SFGUI.hpp>
 #include <SFGUI/Desktop.hpp>
-#include <SFGUI/Entry.hpp>
-#include <SFGUI/Notebook.hpp>
-#include <SFGUI/Window.hpp>
 
 namespace sf
 {
@@ -31,27 +28,15 @@ public:
   const sfg::Desktop& getDesktop() const;
 
 private:
-  void loadTileset();
 
   void initGui();
   void initMenuBar();
-  void initLayerWindow();
-  void initSelectionWindow();
   
 private:
   Application &mApplication;
 
   sfg::SFGUI mGui;
   sfg::Desktop mDesktop;
-
-  sf::Image sfImg;
-
-  sfg::Notebook::Ptr mTilesetNotebook;
-  struct
-  {
-    sfg::Window::Ptr window;
-    sfg::Entry::Ptr tilesetName;
-  }mLoadTilesetDialog;
 };
 
 #endif
