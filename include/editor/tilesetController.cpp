@@ -3,6 +3,8 @@
 #include "tilesetManager.hpp"
 #include "selectionManager.hpp"
 
+#include "utility/mouseOnWindowChecker.hpp"
+
 #include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
@@ -22,12 +24,11 @@
 #include <SFGUI/Window.hpp>
 
 TilesetController::TilesetController(sf::Window &window, TilesetManager &tilesetManager, SelectionManager &selectionManager,
-              sfg::Desktop &desktop, bool &usedEvent) :
+              sfg::Desktop &desktop) :
   mWindow(window),
   mTilesetManager(tilesetManager),
   mSelectionManager(selectionManager),
-  mDesktop(desktop),
-  mUsedEvent(usedEvent)
+  mDesktop(desktop)
 {
   initGui();
 }
@@ -336,8 +337,10 @@ void TilesetController::initTilesetWindow()
 
 
   auto window = sfg::Window::Create(sfg::Window::Style::TOPLEVEL | sfg::Window::Style::SHADOW);
-  window->GetSignal(sfg::Window::OnMouseLeftPress).Connect([this](){ mUsedEvent = true; });
-  window->GetSignal(sfg::Window::OnMouseMove).Connect([this](){ mUsedEvent = true; });
+  window->GetSignal(sfg::Window::OnMouseEnter).Connect(std::bind(&MouseOnWindowChecker::increaseCounter,
+    &MouseOnWindowChecker::getInstance()));
+  window->GetSignal(sfg::Window::OnMouseLeave).Connect(std::bind(&MouseOnWindowChecker::decreaseCounter,
+    &MouseOnWindowChecker::getInstance()));
   window->SetTitle("Tilemaps");
   window->Add(box);
   mDesktop.Add(window);
@@ -347,8 +350,10 @@ void TilesetController::initLoadTilesetDialog()
 {
   mGui.loadTilesetDialog = sfg::Window::Create(sfg::Window::Style::BACKGROUND |
     sfg::Window::Style::TITLEBAR);
-  mGui.loadTilesetDialog->GetSignal(sfg::Window::OnMouseLeftPress).Connect([this](){ mUsedEvent = true; });
-  mGui.loadTilesetDialog->GetSignal(sfg::Window::OnMouseMove).Connect([this](){ mUsedEvent = true; });
+  mGui.loadTilesetDialog->GetSignal(sfg::Window::OnMouseEnter).Connect(std::bind(&MouseOnWindowChecker::increaseCounter,
+    &MouseOnWindowChecker::getInstance()));
+  mGui.loadTilesetDialog->GetSignal(sfg::Window::OnMouseLeave).Connect(std::bind(&MouseOnWindowChecker::decreaseCounter,
+    &MouseOnWindowChecker::getInstance()));
   mGui.loadTilesetDialog->SetTitle("Load new Tileset");
 
   auto box = sfg::Box::Create(sfg::Box::Orientation::VERTICAL, 5.f);
@@ -360,10 +365,12 @@ void TilesetController::initLoadTilesetDialog()
 
   auto subBox = sfg::Box::Create(sfg::Box::Orientation::HORIZONTAL, 5.f);
   auto bt = sfg::Button::Create("Load");
-  bt->GetSignal(sfg::Button::OnLeftClick).Connect(std::bind(&TilesetController::loadNewTileset, this));
+  bt->GetSignal(sfg::Button::OnLeftClick).Connect([this](){ loadNewTileset();
+      MouseOnWindowChecker::getInstance().decreaseCounter(); });
   subBox->Pack(bt);
   bt = sfg::Button::Create("Cancel");
-  bt->GetSignal(sfg::Button::OnLeftClick).Connect([this](){mGui.loadTilesetDialog->Show(false); });
+  bt->GetSignal(sfg::Button::OnLeftClick).Connect([this](){mGui.loadTilesetDialog->Show(false);
+      MouseOnWindowChecker::getInstance().decreaseCounter(); });
   subBox->Pack(bt);
 
   box->Pack(subBox);
@@ -372,7 +379,5 @@ void TilesetController::initLoadTilesetDialog()
   mGui.loadTilesetDialog->Add(box);
   mGui.loadTilesetDialog->Show(false);
   //mLoadTilesetDialog.window->SetZOrder(5);
-  mGui.loadTilesetDialog->GetSignal(sfg::Window::OnMouseLeftPress).Connect([this](){ mUsedEvent = true; });
-  mGui.loadTilesetDialog->GetSignal(sfg::Window::OnMouseMove).Connect([this](){ mUsedEvent = true; });
   mDesktop.Add(mGui.loadTilesetDialog);
 }

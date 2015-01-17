@@ -17,7 +17,7 @@ class Application;
 class Gui
 {
 public:
-  Gui(Application &app, bool &usedEvent);
+  Gui(Application &app);
 
   bool handleEvent(const sf::Event &event);
   void update(float seconds);
@@ -34,7 +34,6 @@ private:
   
 private:
   Application &mApplication;
-  bool &mUsedEvent;
 
   sfg::SFGUI mGui;
   sfg::Desktop mDesktop;

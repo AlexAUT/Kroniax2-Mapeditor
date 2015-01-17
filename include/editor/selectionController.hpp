@@ -17,8 +17,7 @@ namespace sfg
 class SelectionController
 {
 public:
-  SelectionController(SelectionManager &selectionManager, sfg::Desktop &desktop,
-    bool &usedEvent);
+  SelectionController(SelectionManager &selectionManager, sfg::Desktop &desktop);
 
   void update();
   void redrawCanvas();
@@ -29,7 +28,6 @@ private:
 private:
   SelectionManager &mSelectionManager;
   sfg::Desktop &mDesktop;
-  bool &mUsedEvent;
 
   std::shared_ptr<sfg::Canvas> mPreviewCanvas;
   sf::Sprite mTilePreview;

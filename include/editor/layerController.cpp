@@ -3,6 +3,8 @@
 #include "layerManager.hpp"
 #include "selectionManager.hpp"
 
+#include "utility/mouseOnWindowChecker.hpp"
+
 #include <SFGUI/Alignment.hpp>
 #include <SFGUI/Box.hpp>
 #include <SFGUI/Button.hpp>
@@ -18,13 +20,11 @@
 #include <SFGUI/ToggleButton.hpp>
 #include <SFGUI/Window.hpp>
 
-LayerController::LayerController(LayerManager &layerManager, SelectionManager &selectionManager, TilesetManager &tilesetManager, sfg::Desktop &desktop,
-  bool &usedEvent) :
+LayerController::LayerController(LayerManager &layerManager, SelectionManager &selectionManager, TilesetManager &tilesetManager, sfg::Desktop &desktop) :
   mLayerManager(layerManager),
   mSelectionManager(selectionManager),
   mTilesetManager(tilesetManager),
-  mDesktop(desktop),
-  mUsedEvent(usedEvent)
+  mDesktop(desktop)
 {
   initGui();
 }
@@ -135,8 +135,10 @@ void LayerController::initLayerWindow()
 
   auto window = sfg::Window::Create(sfg::Window::Style::BACKGROUND | sfg::Window::Style::SHADOW |
     sfg::Window::Style::TITLEBAR | sfg::Window::Style::RESIZE);
-  window->GetSignal(sfg::Window::OnMouseLeftPress).Connect([this](){ mUsedEvent = true; });
-  window->GetSignal(sfg::Window::OnMouseMove).Connect([this](){ mUsedEvent = true; });
+  window->GetSignal(sfg::Window::OnMouseEnter).Connect(std::bind(&MouseOnWindowChecker::increaseCounter,
+    &MouseOnWindowChecker::getInstance()));
+  window->GetSignal(sfg::Window::OnMouseLeave).Connect(std::bind(&MouseOnWindowChecker::decreaseCounter,
+    &MouseOnWindowChecker::getInstance()));
 
   window->Add(box);
   window->SetTitle("Layers");
@@ -169,17 +171,21 @@ void LayerController::initNewLayerDialog()
 
   subBox = sfg::Box::Create(sfg::Box::Orientation::HORIZONTAL, 5.f);
   auto bt = sfg::Button::Create("Create");
-  bt->GetSignal(sfg::Button::OnLeftClick).Connect(std::bind(&LayerController::addLayer, this));
+  bt->GetSignal(sfg::Button::OnLeftClick).Connect([this](){ addLayer();
+    MouseOnWindowChecker::getInstance().decreaseCounter(); });
   subBox->Pack(bt);
   bt = sfg::Button::Create("Cancel");
-  bt->GetSignal(sfg::Button::OnLeftClick).Connect([this](){mGui.newLayerDialog->Show(false); });
+  bt->GetSignal(sfg::Button::OnLeftClick).Connect([this](){mGui.newLayerDialog->Show(false);
+    MouseOnWindowChecker::getInstance().decreaseCounter(); });
   subBox->Pack(bt);
   box->Pack(subBox);
 
   mGui.newLayerDialog = sfg::Window::Create(sfg::Window::Style::BACKGROUND |
     sfg::Window::Style::SHADOW | sfg::Window::Style::TITLEBAR);
-  mGui.newLayerDialog->GetSignal(sfg::Window::OnMouseLeftPress).Connect([this](){ mUsedEvent = true; });
-  mGui.newLayerDialog->GetSignal(sfg::Window::OnMouseMove).Connect([this](){ mUsedEvent = true; });
+  mGui.newLayerDialog->GetSignal(sfg::Window::OnMouseEnter).Connect(std::bind(&MouseOnWindowChecker::increaseCounter,
+    &MouseOnWindowChecker::getInstance()));
+  mGui.newLayerDialog->GetSignal(sfg::Window::OnMouseLeave).Connect(std::bind(&MouseOnWindowChecker::decreaseCounter,
+    &MouseOnWindowChecker::getInstance()));
   mGui.newLayerDialog->SetTitle("Create new Layer");
   mGui.newLayerDialog->Add(box);
   mDesktop.Add(mGui.newLayerDialog);

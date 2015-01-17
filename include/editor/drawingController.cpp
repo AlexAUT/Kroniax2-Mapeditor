@@ -3,6 +3,8 @@
 #include "selectionManager.hpp" 
 #include "layerManager.hpp"
 
+#include "utility/mouseOnWindowChecker.hpp"
+
 #include <iostream>
 
 #include <SFML/Window/Event.hpp>
@@ -19,20 +21,24 @@ DrawingController::DrawingController(SelectionManager &selectionManager, LayerMa
 
 void DrawingController::handleEvent(const sf::Event &event)
 {
-  if (event.type == sf::Event::MouseMoved)
+  //Check if the mose is on "free" space
+  if (!MouseOnWindowChecker::getInstance().isMouseOnWidget())
   {
-    if (mIsLeftPressed)
-      addTile({ event.mouseMove.x, event.mouseMove.y });
-    else
-      updateHighlightRect(event);
+    if (event.type == sf::Event::MouseMoved)
+    {
+      if (mIsLeftPressed)
+        addTile({ event.mouseMove.x, event.mouseMove.y });
+      else
+        updateHighlightRect(event);
+    }
+    else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+    {
+      addTile({ event.mouseButton.x, event.mouseButton.y });
+      mIsLeftPressed = true;
+    }
+    else if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
+      mIsLeftPressed = false;
   }
-  else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
-  {
-    addTile({ event.mouseButton.x, event.mouseButton.y });
-    mIsLeftPressed = true;
-  }
-  else if(event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
-    mIsLeftPressed = false;
 }
 
 void DrawingController::render(sf::RenderWindow &window)

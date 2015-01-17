@@ -38,7 +38,7 @@ class TilesetController
 {
 public:
   TilesetController(sf::Window &window, TilesetManager &tilesetManager, SelectionManager &selectionManager,
-    sfg::Desktop &desktop, bool &mUsedEvent);
+    sfg::Desktop &desktop);
 
   void update();
 
@@ -69,7 +69,6 @@ private:
   TilesetManager &mTilesetManager;
   SelectionManager &mSelectionManager;
   sfg::Desktop &mDesktop;
-  bool &mUsedEvent;
 
   sf::Vector2i mSelectedTile = { -1, -1 };
   sf::Vector2i mMouseOverTile = { -1, -1 };

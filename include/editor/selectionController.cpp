@@ -2,6 +2,8 @@
 
 #include "selectionManager.hpp"
 
+#include "utility/mouseOnWindowChecker.hpp"
+
 #include <SFML/Graphics/Image.hpp>
 
 #include <SFGUI/Alignment.hpp>
@@ -14,11 +16,9 @@
 #include <SFGUI/Scale.hpp>  
 #include <SFGUI/Window.hpp>
 
-SelectionController::SelectionController(SelectionManager &selectionManager, sfg::Desktop &desktop,
-    bool &usedEvent) :
+SelectionController::SelectionController(SelectionManager &selectionManager, sfg::Desktop &desktop) :
   mSelectionManager(selectionManager),
-  mDesktop(desktop),
-  mUsedEvent(usedEvent)
+  mDesktop(desktop)
 {
   initGui();
 
@@ -151,8 +151,10 @@ void SelectionController::initGui()
 
   auto window = sfg::Window::Create(sfg::Window::Style::BACKGROUND | sfg::Window::Style::SHADOW |
     sfg::Window::Style::TITLEBAR);
-  window->GetSignal(sfg::Window::OnMouseLeftPress).Connect([this](){ mUsedEvent = true; });
-  window->GetSignal(sfg::Window::OnMouseMove).Connect([this](){ mUsedEvent = true; });
+  window->GetSignal(sfg::Window::OnMouseEnter).Connect(std::bind(&MouseOnWindowChecker::increaseCounter,
+    &MouseOnWindowChecker::getInstance()));
+  window->GetSignal(sfg::Window::OnMouseLeave).Connect(std::bind(&MouseOnWindowChecker::decreaseCounter,
+    &MouseOnWindowChecker::getInstance()));
   window->SetTitle("Drawing mode");
   window->Add(box);
   mDesktop.Add(window);

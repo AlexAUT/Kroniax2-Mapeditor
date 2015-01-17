@@ -2,6 +2,8 @@
 
 #include "../application.hpp"
 
+#include "utility/mouseOnWindowChecker.hpp"
+
 #include <SFML/Graphics/RenderWindow.hpp>
 
 #include <SFGUI/Box.hpp>
@@ -11,9 +13,8 @@
 #include <SFGUI/Window.hpp>
 
 
-Gui::Gui(Application &application, bool &usedEvent) :
-  mApplication(application),
-  mUsedEvent(usedEvent)
+Gui::Gui(Application &application) :
+  mApplication(application)
 {
   initGui();
 }
@@ -79,8 +80,10 @@ void Gui::initMenuBar()
 
   //Add everything to window
   auto window = sfg::Window::Create(sfg::Window::Style::BACKGROUND | sfg::Window::Style::SHADOW);
-  window->GetSignal(sfg::Window::OnMouseLeftPress).Connect([this](){ mUsedEvent = true; });
-  window->GetSignal(sfg::Window::OnMouseMove).Connect([this](){ mUsedEvent = true; });
+  window->GetSignal(sfg::Window::OnMouseEnter).Connect(std::bind(&MouseOnWindowChecker::increaseCounter,
+    &MouseOnWindowChecker::getInstance()));
+  window->GetSignal(sfg::Window::OnMouseLeave).Connect(std::bind(&MouseOnWindowChecker::decreaseCounter,
+    &MouseOnWindowChecker::getInstance()));
   window->Add(box);
   mDesktop.Add(window);
 }

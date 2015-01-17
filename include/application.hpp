@@ -52,8 +52,6 @@ private:
   SelectionManager mSelectionManager;
   SelectionController mSelectionController;
   DrawingController mDrawingController;
-
-  bool mGuiUsedEvent;
 };
 
 #endif

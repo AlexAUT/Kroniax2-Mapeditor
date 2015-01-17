@@ -19,8 +19,7 @@ namespace sfg
 class LayerController
 {
 public:
-  LayerController(LayerManager &layerManager, SelectionManager &selectionManager, TilesetManager &tilesetManager, sfg::Desktop &desktop,
-    bool &usedEvent);
+  LayerController(LayerManager &layerManager, SelectionManager &selectionManager, TilesetManager &tilesetManager, sfg::Desktop &desktop);
 private:
 
   void changeActiveLayer(const std::string &name);
@@ -38,7 +37,6 @@ private:
   SelectionManager &mSelectionManager;
   TilesetManager &mTilesetManager;
   sfg::Desktop &mDesktop;
-  bool &mUsedEvent;
 
   struct
   {
@@ -50,8 +48,6 @@ private:
     std::shared_ptr<sfg::Entry> newLayerTileSizeX;
     std::shared_ptr<sfg::Entry> newLayerTileSizeY;
   }mGui;
-
-  
 };
 
 #endif

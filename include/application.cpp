@@ -12,6 +12,7 @@
 
 #include "application.hpp"
 
+#include "editor/utility/mouseOnWindowChecker.hpp"
 #include "aw/utilities/log.hpp"
 
 #include <exception>
@@ -32,11 +33,11 @@
 #include <SFGUI/ToggleButton.hpp>
 
 Application::Application() :
-  mGui(*this, mGuiUsedEvent),
-  mTilesetController(mWindow, mTilesetManager, mSelectionManager, mGui.getDesktop(), mGuiUsedEvent),
-  mLayerController(mLayerManager, mSelectionManager, mTilesetManager, mGui.getDesktop(), mGuiUsedEvent),
+  mGui(*this),
+  mTilesetController(mWindow, mTilesetManager, mSelectionManager, mGui.getDesktop()),
+  mLayerController(mLayerManager, mSelectionManager, mTilesetManager, mGui.getDesktop()),
   mSelectionManager(mTilesetManager),
-  mSelectionController(mSelectionManager, mGui.getDesktop(), mGuiUsedEvent),
+  mSelectionController(mSelectionManager, mGui.getDesktop()),
   mDrawingController(mSelectionManager, mLayerManager)
 {
   initMainWindow();
@@ -46,7 +47,7 @@ int Application::run()
 {
   while (mWindow.isOpen())
   {
-    mGuiUsedEvent = false;
+    std::cout << "Mouse on Widget: " << MouseOnWindowChecker::getInstance().getCounter() << std::endl;
     while (mWindow.pollEvent(mEvent))
     {
       if (!mGui.handleEvent(mEvent))
@@ -54,10 +55,7 @@ int Application::run()
         if (mEvent.type == sf::Event::Closed)
           mWindow.close();
       }
-      if (!mGuiUsedEvent)
-      {
-        mDrawingController.handleEvent(mEvent);
-      }
+      mDrawingController.handleEvent(mEvent);
     }
 
     mGui.update(0.016f);
