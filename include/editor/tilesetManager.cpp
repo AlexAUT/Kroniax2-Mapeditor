@@ -29,6 +29,11 @@ void TilesetManager::removeTileset(const std::string &name)
   }
 }
 
+const sf::Texture& TilesetManager::getTileset(unsigned index) const
+{
+  return mTilesets[index].second;
+}
+
 int TilesetManager::getTilesetIndex(const std::string &name) const
 {
   for (int i = 0; i < static_cast<int>(mTilesets.size()); i++)

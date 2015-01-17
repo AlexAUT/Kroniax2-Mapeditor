@@ -14,6 +14,8 @@ public:
   bool loadTileset(const std::string &name);
   void removeTileset(const std::string &name);
 
+  const sf::Texture& getTileset(unsigned index) const;
+
   int getTilesetIndex(const std::string &name) const;
   const sf::Texture& getTileset(const std::string &name) const;
 

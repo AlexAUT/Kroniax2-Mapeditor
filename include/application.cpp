@@ -34,10 +34,10 @@
 Application::Application() :
   mGui(*this, mGuiUsedEvent),
   mTilesetController(mWindow, mTilesetManager, mSelectionManager, mGui.getDesktop(), mGuiUsedEvent),
-  mLayerController(mLayerManager, mSelectionManager, mGui.getDesktop(), mGuiUsedEvent),
+  mLayerController(mLayerManager, mSelectionManager, mTilesetManager, mGui.getDesktop(), mGuiUsedEvent),
   mSelectionManager(mTilesetManager),
   mSelectionController(mSelectionManager, mGui.getDesktop(), mGuiUsedEvent),
-  mDrawingController(mSelectionManager)
+  mDrawingController(mSelectionManager, mLayerManager)
 {
   initMainWindow();
 }
@@ -63,8 +63,10 @@ int Application::run()
     mGui.update(0.016f);
     mTilesetController.update();
     mSelectionController.update();
+    mLayerManager.update();
 
     mWindow.clear(sf::Color(200, 200, 200));
+    mLayerManager.render(mWindow);
     mDrawingController.render(mWindow);
     mGui.display();
     mWindow.display();

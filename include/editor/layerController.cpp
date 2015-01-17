@@ -18,10 +18,11 @@
 #include <SFGUI/ToggleButton.hpp>
 #include <SFGUI/Window.hpp>
 
-LayerController::LayerController(LayerManager &layerManager, SelectionManager &selectionManager, sfg::Desktop &desktop,
+LayerController::LayerController(LayerManager &layerManager, SelectionManager &selectionManager, TilesetManager &tilesetManager, sfg::Desktop &desktop,
   bool &usedEvent) :
   mLayerManager(layerManager),
   mSelectionManager(selectionManager),
+  mTilesetManager(tilesetManager),
   mDesktop(desktop),
   mUsedEvent(usedEvent)
 {
@@ -47,7 +48,7 @@ void LayerController::addLayer()
   int tileSizeX = std::atoi(mGui.newLayerTileSizeX->GetText().toAnsiString().c_str());
   int tileSizeY = std::atoi(mGui.newLayerTileSizeY->GetText().toAnsiString().c_str());
 
-  if (mLayerManager.addLayer(name, { tileSizeX, tileSizeY }))
+  if (mLayerManager.addLayer(name, { tileSizeX, tileSizeY }, mTilesetManager))
   {
     addLayerToTable(name);
   }

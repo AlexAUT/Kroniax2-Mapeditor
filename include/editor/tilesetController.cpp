@@ -177,7 +177,7 @@ sf::Vector2i TilesetController::getTileMouseIsOver()
 {
   sf::Vector2f mousePos = static_cast<sf::Vector2f>(sf::Mouse::getPosition(mWindow));
   mousePos = mousePos - (mGui.activePage->canvas->GetAbsolutePosition());
-  std::cout << "MosuePos on Canvas: " << mousePos.x << " | " << mousePos.y << std::endl;
+ // std::cout << "MosuePos on Canvas: " << mousePos.x << " | " << mousePos.y << std::endl;
   sf::Vector2f difference = {
     mRenderSprite.getGlobalBounds().width - mRenderTex.getSize().x,
     mRenderSprite.getGlobalBounds().height - mRenderTex.getSize().y
@@ -187,7 +187,7 @@ sf::Vector2i TilesetController::getTileMouseIsOver()
   mousePos.x /= mRenderSprite.getScale().x;
   mousePos.y /= mRenderSprite.getScale().y;
   // mousePos -= static_cast<sf::Vector2i>(mTilesetManager.getTileset(mGui.activePage->texName).getSize()) / 2;
-  std::cout << "MousePos on tileset: " << mousePos.x << " | " << mousePos.y << std::endl;
+ // std::cout << "MousePos on tileset: " << mousePos.x << " | " << mousePos.y << std::endl;
   auto tileSize = mSelectionManager.getSelection().tileSize;
   sf::Vector2i tile = {
     static_cast<int>(mousePos.x) / tileSize.x,
@@ -372,5 +372,7 @@ void TilesetController::initLoadTilesetDialog()
   mGui.loadTilesetDialog->Add(box);
   mGui.loadTilesetDialog->Show(false);
   //mLoadTilesetDialog.window->SetZOrder(5);
+  mGui.loadTilesetDialog->GetSignal(sfg::Window::OnMouseLeftPress).Connect([this](){ mUsedEvent = true; });
+  mGui.loadTilesetDialog->GetSignal(sfg::Window::OnMouseMove).Connect([this](){ mUsedEvent = true; });
   mDesktop.Add(mGui.loadTilesetDialog);
 }

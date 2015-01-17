@@ -12,7 +12,10 @@ class LayerManager
 {
 public:
 
-  bool addLayer(const std::string &name, sf::Vector2i tileSize);
+  void update();
+  void render(sf::RenderWindow &window);
+
+  bool addLayer(const std::string &name, sf::Vector2i tileSize, TilesetManager &tilesetManager);
 
   Layer& getLayer(const std::string &name);
   const Layer& getLayer(const std::string &name) const;
@@ -21,7 +24,6 @@ public:
   std::string getActiveLayerName();
   Layer& getActiveLayer();
   const Layer& getActiveLayer() const;
-
 
 private:
 

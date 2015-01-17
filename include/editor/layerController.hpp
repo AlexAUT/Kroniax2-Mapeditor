@@ -6,6 +6,7 @@
 
 class LayerManager;
 class SelectionManager;
+class TilesetManager;
 
 namespace sfg
 {
@@ -18,7 +19,7 @@ namespace sfg
 class LayerController
 {
 public:
-  LayerController(LayerManager &layerManager, SelectionManager &selectionManager, sfg::Desktop &desktop,
+  LayerController(LayerManager &layerManager, SelectionManager &selectionManager, TilesetManager &tilesetManager, sfg::Desktop &desktop,
     bool &usedEvent);
 private:
 
@@ -35,6 +36,7 @@ private:
 private:
   LayerManager &mLayerManager;
   SelectionManager &mSelectionManager;
+  TilesetManager &mTilesetManager;
   sfg::Desktop &mDesktop;
   bool &mUsedEvent;
 
