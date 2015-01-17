@@ -12,7 +12,6 @@
 
 #include "application.hpp"
 
-#include "editor/utility/mouseOnWindowChecker.hpp"
 #include "aw/utilities/log.hpp"
 
 #include <exception>
@@ -38,7 +37,7 @@ Application::Application() :
   mLayerController(mLayerManager, mSelectionManager, mTilesetManager, mGui.getDesktop()),
   mSelectionManager(mTilesetManager),
   mSelectionController(mSelectionManager, mGui.getDesktop()),
-  mDrawingController(mSelectionManager, mLayerManager)
+  mDrawingController(mWindow, mSelectionManager, mLayerManager)
 {
   initMainWindow();
 }
@@ -47,7 +46,6 @@ int Application::run()
 {
   while (mWindow.isOpen())
   {
-    std::cout << "Mouse on Widget: " << MouseOnWindowChecker::getInstance().getCounter() << std::endl;
     while (mWindow.pollEvent(mEvent))
     {
       if (!mGui.handleEvent(mEvent))
@@ -64,7 +62,6 @@ int Application::run()
     mLayerManager.update();
 
     mWindow.clear(sf::Color(200, 200, 200));
-    mLayerManager.render(mWindow);
     mDrawingController.render(mWindow);
     mGui.display();
     mWindow.display();

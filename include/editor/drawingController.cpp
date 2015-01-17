@@ -7,30 +7,37 @@
 
 #include <iostream>
 
-#include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Window/Event.hpp>
+#include <SFML/Window/Keyboard.hpp>
 
 
-DrawingController::DrawingController(SelectionManager &selectionManager, LayerManager &layerManager) :
+DrawingController::DrawingController(sf::RenderWindow &window, SelectionManager &selectionManager, LayerManager &layerManager) :
+  mWindow(window),
   mSelectionManager(selectionManager),
   mLayerManager(layerManager),
-  mIsLeftPressed(false)
+  mIsLeftPressed(false),
+  mView({ 600, 375 }, {1200, 750})
 {
 
 }
 
 void DrawingController::handleEvent(const sf::Event &event)
 {
-  //Check if the mose is on "free" space
+  //Check if the mouse is on "free" space
   if (!MouseOnWindowChecker::getInstance().isMouseOnWidget())
   {
     if (event.type == sf::Event::MouseMoved)
     {
       if (mIsLeftPressed)
         addTile({ event.mouseMove.x, event.mouseMove.y });
+      else if (mIsRightPressed)
+        moveView({ event.mouseMove.x, event.mouseMove.y });
       else
         updateHighlightRect(event);
     }
+    else if (event.type == sf::Event::MouseWheelMoved)
+      zoomView(event.mouseWheel.delta);
     else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
     {
       addTile({ event.mouseButton.x, event.mouseButton.y });
@@ -38,12 +45,34 @@ void DrawingController::handleEvent(const sf::Event &event)
     }
     else if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
       mIsLeftPressed = false;
+    else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Right)
+    {
+      mLastMousePos = { event.mouseButton.x, event.mouseButton.y };
+      mIsRightPressed = true;
+    }
+    else if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Right)
+      mIsRightPressed = false;
   }
 }
 
 void DrawingController::render(sf::RenderWindow &window)
 {
-  window.draw(mHighlightRect);
+  window.setView(mView);
+  mLayerManager.render(window);
+  if (!mIsLeftPressed && !mIsRightPressed)
+    window.draw(mHighlightRect);
+}
+
+void DrawingController::moveView(sf::Vector2i mousePos)
+{
+  auto offset = mWindow.mapPixelToCoords(mousePos, mView) - mWindow.mapPixelToCoords(mLastMousePos, mView);
+  mLastMousePos = mousePos;
+  mView.move(-offset);
+}
+
+void DrawingController::zoomView(int delta)
+{
+  mView.zoom(1.f + (0.05f * delta));
 }
 
 void DrawingController::addTile(sf::Vector2i mousePos)
@@ -72,9 +101,10 @@ void DrawingController::updateHighlightRect(const sf::Event &event)
 sf::Vector2i DrawingController::getTileIndex(sf::Vector2i mousePos)
 {
   auto &selection = mSelectionManager.getSelection();
+  auto mouseOnView = mWindow.mapPixelToCoords(mousePos, mView);
   sf::Vector2i index = {
-    mousePos.x / selection.tileSize.x,
-    mousePos.y / selection.tileSize.y
+    static_cast<int>(mouseOnView.x) / selection.tileSize.x,
+    static_cast<int>(mouseOnView.y) / selection.tileSize.y
   };
   return index;
 }
@@ -82,9 +112,10 @@ sf::Vector2i DrawingController::getTileIndex(sf::Vector2i mousePos)
 sf::Vector2f DrawingController::getTilePosition(const sf::Event &event)
 {
   auto &selection = mSelectionManager.getSelection();
+  auto mousePos = mWindow.mapPixelToCoords({ event.mouseMove.x, event.mouseMove.y }, mView);
   sf::Vector2f pos = {
-    static_cast<float>((event.mouseMove.x / selection.tileSize.x) * selection.tileSize.x),
-    static_cast<float>((event.mouseMove.y / selection.tileSize.y) * selection.tileSize.y)
+    static_cast<float>(static_cast<int>(mousePos.x / selection.tileSize.x) * selection.tileSize.x),
+    static_cast<float>(static_cast<int>(mousePos.y / selection.tileSize.y) * selection.tileSize.y)
   };
 
   return pos;
